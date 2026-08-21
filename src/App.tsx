@@ -1,22 +1,12 @@
-import { useEffect, useRef } from "react";
+import Canvas from "./Components/Canvas";
+import Dashboard from "./Components/Dashboard";
 
 function App() {
-    const canvas = useRef<HTMLCanvasElement>(null);
-
-    useEffect(() => {
-        console.log(
-            "Canvas ref:",
-            canvas.current?.height,
-            canvas.current?.width,
-        );
-    });
-
     return (
-        <canvas
-            ref={canvas}
-            width={window.innerWidth}
-            height={window.innerHeight}
-        />
+        <>
+            <Dashboard />
+            <Canvas />
+        </>
     );
 }
 
