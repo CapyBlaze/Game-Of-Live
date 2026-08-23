@@ -1,5 +1,7 @@
 import { useDashboardStore } from "../store/useDashboardStore";
 
+const FILL_GRID = 0.7;
+
 export class GameOfLife {
     width: number;
     height: number;
@@ -36,7 +38,7 @@ export class GameOfLife {
 
     randomize() {
         for (let i = 0; i < this.grid.length; i++) {
-            this.grid[i] = Math.random() > 0.7 ? 1 : 0;
+            this.grid[i] = Math.random() > FILL_GRID ? 1 : 0;
             this.energy[i] = this.grid[i];
         }
     }
@@ -118,5 +120,15 @@ export class GameOfLife {
                 }
             }
         }
+    }
+
+    clear() {
+        this.grid.fill(0);
+        this.energy.fill(0);
+        this.generationCount = 0;
+        this.numberOfLivingCells = 0;
+
+        useDashboardStore.getState().actions.setCurrentGeneration(this.generationCount);
+        useDashboardStore.getState().actions.setNumberOfLivingCells(this.numberOfLivingCells);
     }
 }

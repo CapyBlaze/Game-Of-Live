@@ -2,9 +2,7 @@ import { create } from "zustand";
 
 interface DashboardState {
     playing: boolean;
-    reset: number;
-    random: number;
-    zoom: number;
+    cellSize: number;
 
     targetFps: number;
     fadeLevels: number;
@@ -13,12 +11,14 @@ interface DashboardState {
 
     showGrid: boolean;
     mode: "Moore" | "Neumann";
+    background: string;
+    gridColor: string;
 
     actions: {
         setPlaying: (enabled: boolean) => void;
-        setReset: () => void;
-        setRandom: () => void;
-        setZoom: (zoom: number) => void;
+        setCellSize: (cellSize: number) => void;
+        incrementCellSize: () => void;
+        decrementCellSize: () => void;
 
         setTargetFps: (fps: number) => void;
         setFadeLevels: (levels: number) => void;
@@ -27,14 +27,20 @@ interface DashboardState {
 
         setShowGrid: (enabled: boolean) => void;
         setMode: (mode: "Moore" | "Neumann") => void;
+        setBackground: (background: string) => void;
+        setGridColor: (color: string) => void;
     };
+
+    resetGameInstance: () => void;
+    setResetGameInstance: (fn: () => void) => void;
+
+    randomizeGameInstance: () => void;
+    setRandomizeGameInstance: (fn: () => void) => void;
 }
 
 export const useDashboardStore = create<DashboardState>()((set) => ({
     playing: true,
-    reset: 0,
-    random: 0,
-    zoom: 1,
+    cellSize: 5,
 
     targetFps: 15,
     fadeLevels: 16,
@@ -43,21 +49,29 @@ export const useDashboardStore = create<DashboardState>()((set) => ({
 
     showGrid: false,
     mode: "Moore",
+    background: "linear-gradient(40deg, #8a2387, #e94057, #f27121)",
+    gridColor: "236, 225, 248",
 
     actions: {
         setPlaying: (enabled: boolean) => set({ playing: enabled }),
-        setReset: () => set({ reset: 0 }),
-        setRandom: () => set({ random: 0 }),
-        setZoom: (zoom: number) => set({ zoom: zoom }),
+        setCellSize: (cellSize: number) => set({ cellSize: cellSize }),
+        incrementCellSize: () => set((state) => ({ cellSize: Math.min(10, state.cellSize + 1) })),
+        decrementCellSize: () => set((state) => ({ cellSize: Math.max(3, state.cellSize - 1) })),
 
         setTargetFps: (fps: number) => set({ targetFps: fps }),
         setFadeLevels: (levels: number) => set({ fadeLevels: levels }),
-        setCurrentGeneration: (generation: number) =>
-            set({ currentGeneration: generation }),
-        setNumberOfLivingCells: (count: number) =>
-            set({ numberOfLivingCells: count }),
+        setCurrentGeneration: (generation: number) => set({ currentGeneration: generation }),
+        setNumberOfLivingCells: (count: number) => set({ numberOfLivingCells: count }),
 
         setShowGrid: (enabled: boolean) => set({ showGrid: enabled }),
         setMode: (mode: "Moore" | "Neumann") => set({ mode: mode }),
+        setBackground: (background: string) => set({ background: background }),
+        setGridColor: (color: string) => set({ gridColor: color }),
     },
+
+    resetGameInstance: () => {},
+    setResetGameInstance: (fn: () => void) => set({ resetGameInstance: fn }),
+
+    randomizeGameInstance: () => {},
+    setRandomizeGameInstance: (fn: () => void) => set({ randomizeGameInstance: fn }),
 }));

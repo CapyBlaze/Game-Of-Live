@@ -1,76 +1,150 @@
 import { useDashboardStore } from "../store/useDashboardStore";
+import BackgroundSelector from "./BackgroundSelector";
 
 export default function Dashboard() {
     const playing = useDashboardStore((state) => state.playing);
-    // const reset = useDashboardStore((state) => state.reset);
-    // const random = useDashboardStore((state) => state.random);
-    // const zoom = useDashboardStore((state) => state.zoom);
+
+    const resetGameInstance = useDashboardStore((state) => state.resetGameInstance);
+    const randomizeGameInstance = useDashboardStore((state) => state.randomizeGameInstance);
 
     const targetFps = useDashboardStore((state) => state.targetFps);
     const fadeLevels = useDashboardStore((state) => state.fadeLevels);
     const currentGeneration = useDashboardStore((state) => state.currentGeneration);
     const numberOfLivingCells = useDashboardStore((state) => state.numberOfLivingCells);
 
-    // const showGrid = useDashboardStore((state) => state.showGrid);
-    // const mode = useDashboardStore((state) => state.mode);
+    const showGrid = useDashboardStore((state) => state.showGrid);
+    const mode = useDashboardStore((state) => state.mode);
 
     const actions = useDashboardStore((state) => state.actions);
 
     return (
-        <div
-            style={{
-                position: "fixed",
-                top: 20,
-                left: 20,
-                zIndex: 10,
-                background: "rgba(255, 255, 255, 0.8)",
-                padding: "10px 15px",
-                borderRadius: "8px",
-                fontFamily: "sans-serif",
-            }}
-        >
-            <h1>Dashboard</h1>
-
-            <button onClick={() => actions.setPlaying(!playing)}>P</button>
-            <button>R</button>
-            <button>A</button>
-
-            <div>
-                <button>+</button>
-                <button>-</button>
+        <div className="dashboard-container">
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    width: "100%",
+                    marginBottom: "5px",
+                }}
+            >
+                <h2>Dashboard</h2>
+                <img
+                    src="/chevron-forward.svg"
+                    alt="Close"
+                    style={{
+                        width: "20px",
+                        height: "20px",
+                    }}
+                />
             </div>
 
-            <label htmlFor="speed">Speed : {targetFps} gen/s</label>
-            <input
-                id="speed"
-                type="range"
-                min="1"
-                max="60"
-                value={targetFps}
-                onChange={(e) => actions.setTargetFps(Number(e.target.value))}
-                style={{ display: "block", marginTop: "5px" }}
-            />
-
-            <label htmlFor="fade-levels">Fade levels : {fadeLevels}</label>
-            <input
-                id="fade-levels"
-                type="range"
-                min="1"
-                max="30"
-                value={fadeLevels}
-                onChange={(e) => actions.setFadeLevels(Number(e.target.value))}
-                style={{ display: "block", marginTop: "5px" }}
-            />
-
-            <input type="checkbox" onChange={(e) => actions.setShowGrid(e.currentTarget.checked)} />
-
-            <select
-                value={useDashboardStore.getState().mode}
-                onChange={(e) => actions.setMode(e.target.value as "Moore" | "Neumann")}
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    flexWrap: "nowrap",
+                    justifyContent: "space-between",
+                    width: "100%",
+                }}
             >
-                <option value="Moore">Moore</option>
-                <option value="Neumann">Neumann</option>
-            </select>
+                <button onClick={() => actions.setPlaying(!playing)}>
+                    <img
+                        src={playing ? "/pause.svg" : "/play.svg"}
+                        alt={playing ? "Pause" : "Play"}
+                    />
+                </button>
+                <button onClick={resetGameInstance}>
+                    <img src="/trash.svg" alt="Reset" />
+                </button>
+                <button onClick={randomizeGameInstance}>
+                    <img src="/dice.svg" alt="Randomize" />
+                </button>
+
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+                        borderRadius: "5px",
+                        overflow: "hidden",
+                    }}
+                >
+                    <button
+                        onClick={actions.incrementCellSize}
+                        style={{
+                            borderRadius: "0",
+                            boxShadow: "none",
+                            borderRight: "0.5px solid rgba(0, 0, 0, 0.1)",
+                        }}
+                    >
+                        <img src="/add-circle.svg" alt="Zoom In" />
+                    </button>
+                    <button
+                        onClick={actions.decrementCellSize}
+                        style={{
+                            borderRadius: "0",
+                            boxShadow: "none",
+                            borderLeft: "0.5px solid rgba(0, 0, 0, 0.1)",
+                        }}
+                    >
+                        <img src="/remove-circle.svg" alt="Zoom Out" />
+                    </button>
+                </div>
+            </div>
+
+            <div style={{ width: "100%" }}>
+                <label>Speed : {targetFps} gen/s</label>
+                <input
+                    id="speed"
+                    type="range"
+                    min="1"
+                    max="60"
+                    value={targetFps}
+                    onChange={(e) => actions.setTargetFps(Number(e.target.value))}
+                    style={{ display: "block", marginTop: "5px", width: "100%" }}
+                />
+            </div>
+
+            <div style={{ width: "100%" }}>
+                <label>Fade levels : {fadeLevels}</label>
+                <input
+                    type="range"
+                    min="1"
+                    max="30"
+                    value={fadeLevels}
+                    onChange={(e) => actions.setFadeLevels(Number(e.target.value))}
+                    style={{ display: "block", marginTop: "5px", width: "100%" }}
+                />
+            </div>
+
+            <BackgroundSelector />
+
+            <label className="switch">
+                <div>
+                    <input
+                        type="checkbox"
+                        checked={showGrid}
+                        onChange={(e) => actions.setShowGrid(e.currentTarget.checked)}
+                    />
+                    <span className="slider"></span>
+                </div>
+                <span className="switch-label">Show grid</span>
+            </label>
+
+            <label htmlFor="mode">
+                <span>Mode :</span>
+                <select
+                    value={mode}
+                    onChange={(e) => actions.setMode(e.target.value as "Moore" | "Neumann")}
+                >
+                    <option value="Moore">Moore</option>
+                    <option value="Neumann">Neumann</option>
+                </select>
+            </label>
+
+            <hr />
 
             <span>Current generation: {currentGeneration}</span>
             <span>Number of living cells: {numberOfLivingCells}</span>

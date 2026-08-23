@@ -2,15 +2,6 @@ import { useEffect, useRef } from "react";
 import { GameOfLife } from "../Core/gameOfLife";
 import { useDashboardStore } from "../store/useDashboardStore";
 
-const CELL_SIZE = 5;
-
-const GRID_RGB = "236, 225, 248";
-// const BACKGROUND = "linear-gradient(135deg, #4159d0, #c84fc0, #ffcd70)";
-// const BACKGROUND = "linear-gradient(135deg, #ff0099, #493240)";
-// const BACKGROUND = "linear-gradient(135deg, #ec2f4b, #009fff)";
-// const BACKGROUND = "linear-gradient(135deg, #654ea3, #eaafc8)";
-const BACKGROUND = "linear-gradient(40deg, #8a2387, #e94057, #f27121)";
-
 export default function Canvas() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const engineRef = useRef<GameOfLife | null>(null);
@@ -18,10 +9,16 @@ export default function Canvas() {
     const targetFps = useDashboardStore((state) => state.targetFps);
     const fadeLevels = useDashboardStore((state) => state.fadeLevels);
     const playing = useDashboardStore((state) => state.playing);
+    const background = useDashboardStore((state) => state.background);
+    const gridColor = useDashboardStore((state) => state.gridColor);
+    const cellSize = useDashboardStore((state) => state.cellSize);
 
     const fpsRef = useRef<number>(targetFps);
     const fadeLevelsRef = useRef<number>(fadeLevels);
     const playingRef = useRef<boolean>(playing);
+    const backgroundRef = useRef<string>(background);
+    const gridColorRef = useRef<string>(gridColor);
+    const cellSizeRef = useRef<number>(cellSize);
 
     useEffect(() => {
         fpsRef.current = targetFps;
@@ -36,6 +33,18 @@ export default function Canvas() {
     }, [fadeLevels]);
 
     useEffect(() => {
+        backgroundRef.current = background;
+    }, [background]);
+
+    useEffect(() => {
+        gridColorRef.current = gridColor;
+    }, [gridColor]);
+
+    useEffect(() => {
+        cellSizeRef.current = cellSize;
+    }, [cellSize]);
+
+    useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
@@ -44,7 +53,22 @@ export default function Canvas() {
         canvas.width = width;
         canvas.height = height;
 
-        engineRef.current = new GameOfLife(width, height, CELL_SIZE);
+        const engine = new GameOfLife(width, height, cellSizeRef.current);
+        engineRef.current = engine;
+
+        useDashboardStore.getState().setResetGameInstance(() => {
+            engine.clear();
+
+            const ctx = canvas.getContext("2d");
+            ctx?.clearRect(0, 0, canvas.width, canvas.height);
+        });
+
+        useDashboardStore.getState().setRandomizeGameInstance(() => {
+            engine.randomize();
+
+            const ctx = canvas.getContext("2d");
+            ctx?.clearRect(0, 0, canvas.width, canvas.height);
+        });
     }, []);
 
     useEffect(() => {
@@ -83,6 +107,8 @@ export default function Canvas() {
             const delta = currentTime - lastTime;
             const interval = 1000 / fpsRef.current;
             const currentFadeLevels = fadeLevelsRef.current;
+            const currentCellSize = cellSizeRef.current;
+            const currentGridColor = gridColorRef.current;
 
             if (playingRef.current && delta >= interval) {
                 engine.computeNextGeneration();
@@ -108,14 +134,14 @@ export default function Canvas() {
                     if (coords.length === 0) continue;
 
                     const alpha = level / currentFadeLevels;
-                    ctx.fillStyle = `rgba(${GRID_RGB}, ${alpha})`;
+                    ctx.fillStyle = `rgba(${currentGridColor}, ${alpha})`;
                     ctx.beginPath();
                     for (let i = 0; i < coords.length; i += 2) {
                         ctx.rect(
-                            coords[i] * CELL_SIZE,
-                            coords[i + 1] * CELL_SIZE,
-                            CELL_SIZE,
-                            CELL_SIZE,
+                            coords[i] * currentCellSize,
+                            coords[i + 1] * currentCellSize,
+                            currentCellSize,
+                            currentCellSize,
                         );
                     }
                     ctx.fill();
@@ -140,7 +166,7 @@ export default function Canvas() {
                     left: 0,
                     width: "100vw",
                     height: "100vh",
-                    background: BACKGROUND,
+                    background: background,
                     backgroundSize: "contain",
                     backgroundPosition: "center",
                 }}
