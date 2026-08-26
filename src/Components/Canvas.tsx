@@ -201,7 +201,10 @@ export default function Canvas() {
                     left: 0,
                     width: "100vw",
                     height: "100vh",
-                    background: background,
+                    background: !background.includes("raimbow-animation") ? background : "#5461c8",
+                    animation: background.includes("raimbow-animation")
+                        ? "raimbow-animation 10s linear infinite"
+                        : "none",
                 }}
             >
                 <canvas

@@ -37,7 +37,10 @@ function InputRadio({
                 style={{
                     width: "30px",
                     height: "30px",
-                    background: gradient,
+                    background: !gradient.includes("raimbow-animation") ? gradient : "#5461c8",
+                    animation: gradient.includes("raimbow-animation")
+                        ? "raimbow-animation 10s linear infinite"
+                        : "none",
                     borderRadius: "50%",
                     display: "inline-block",
                     transition: "transform 0.2s ease, box-shadow 0.2s ease",

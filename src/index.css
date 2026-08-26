@@ -267,3 +267,41 @@ label.switch {
         max-height: 100vh;
     }
 }
+
+@keyframes raimbow-animation {
+    0% {
+        background: #5461c8;
+    }
+
+    12.5% {
+        background: #c724b1;
+    }
+
+    25% {
+        background: #e4002b;
+    }
+
+    37.5% {
+        background: #ff6900;
+    }
+
+    50% {
+        background: #f6be00;
+    }
+
+    62.5% {
+        background: #97d700;
+    }
+
+    75% {
+        background: #00ab84;
+    }
+
+    87.5% {
+        background: #00a3e0;
+    }
+
+    100% {
+        background: #5461c8;
+    }
+}

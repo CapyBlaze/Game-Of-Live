@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import CONFIG from "../config/defaultConfig";
 
-type GameMode = "Moore" | "Neumann";
+export type GameMode = "Moore" | "Neumann" | "Toric World";
 
 interface DashboardState {
     playing: boolean;

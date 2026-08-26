@@ -58,11 +58,16 @@ export class GameOfLife {
 
                         if (mode === "Neumann" && Math.abs(dx) + Math.abs(dy) === 2) continue;
 
-                        const nx = x + dx;
-                        const ny = y + dy;
+                        let nx, ny;
+                        if (mode === "Toric World") {
+                            nx = (x + dx + cols) % cols;
+                            ny = (y + dy + rows) % rows;
+                        } else {
+                            nx = x + dx;
+                            ny = y + dy;
 
-                        if (nx < 0 || nx >= cols || ny < 0 || ny >= rows) continue;
-
+                            if (nx < 0 || nx >= cols || ny < 0 || ny >= rows) continue;
+                        }
                         neighbors += grid[nx * rows + ny];
                     }
                 }

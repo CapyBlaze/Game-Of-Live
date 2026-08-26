@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDashboardStore } from "../store/useDashboardStore";
+import { useDashboardStore, type GameMode } from "../store/useDashboardStore";
 import BackgroundSelector from "./BackgroundSelector";
 import CONFIG from "../config/defaultConfig";
 
@@ -200,10 +200,11 @@ export default function Dashboard() {
                         name="mode"
                         id="mode"
                         value={mode}
-                        onChange={(e) => actions.setMode(e.target.value as "Moore" | "Neumann")}
+                        onChange={(e) => actions.setMode(e.target.value as GameMode)}
                     >
                         <option value="Moore">Moore</option>
                         <option value="Neumann">Neumann</option>
+                        <option value="Toric World">Toric World</option>
                     </select>
                 </label>
 
