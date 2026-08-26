@@ -221,8 +221,10 @@ export default function Dashboard() {
                         gap: "5px",
                     }}
                 >
-                    <span>Current generation: {currentGeneration}</span>
-                    <span>Number of living cells: {numberOfLivingCells}</span>
+                    <span>Current generation: {currentGeneration.toLocaleString("fr-FR")}</span>
+                    <span>
+                        Number of living cells: {numberOfLivingCells.toLocaleString("fr-FR")}
+                    </span>
                 </div>
             </div>
         </div>
