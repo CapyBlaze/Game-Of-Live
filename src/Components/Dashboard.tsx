@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useDashboardStore } from "../store/useDashboardStore";
 import BackgroundSelector from "./BackgroundSelector";
 
@@ -17,8 +18,10 @@ export default function Dashboard() {
 
     const actions = useDashboardStore((state) => state.actions);
 
+    const [isDashboardVisible, setIsDashboardVisible] = useState(true);
+
     return (
-        <div className="dashboard-container">
+        <div className={`dashboard-container ${isDashboardVisible ? "isopen" : "isclosed"}`}>
             <div
                 style={{
                     display: "flex",
@@ -30,124 +33,156 @@ export default function Dashboard() {
                 }}
             >
                 <h2>Dashboard</h2>
-                <img
-                    src="/chevron-forward.svg"
-                    alt="Close"
+                <button
                     style={{
+                        background: "none",
+                        border: "none",
+                        padding: "0",
+                        margin: "0",
+                        boxShadow: "none",
                         width: "20px",
                         height: "20px",
+                        cursor: "pointer",
                     }}
-                />
+                    onClick={() => setIsDashboardVisible(!isDashboardVisible)}
+                >
+                    <img
+                        src="/chevron-forward.svg"
+                        alt="Close"
+                        style={{
+                            width: "20px",
+                            height: "20px",
+                            transform: `rotate(${isDashboardVisible ? -90 : 90}deg)`,
+                            transition: "transform 0.3s ease-in-out",
+                        }}
+                    />
+                </button>
             </div>
 
             <div
                 style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    flexWrap: "nowrap",
-                    justifyContent: "space-between",
+                    display: "grid",
+                    gap: "15px",
                     width: "100%",
                 }}
             >
-                <button onClick={() => actions.setPlaying(!playing)}>
-                    <img
-                        src={playing ? "/pause.svg" : "/play.svg"}
-                        alt={playing ? "Pause" : "Play"}
-                    />
-                </button>
-                <button onClick={resetGameInstance}>
-                    <img src="/trash.svg" alt="Reset" />
-                </button>
-                <button onClick={randomizeGameInstance}>
-                    <img src="/dice.svg" alt="Randomize" />
-                </button>
-
                 <div
                     style={{
                         display: "flex",
                         flexDirection: "row",
-                        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
-                        borderRadius: "5px",
-                        overflow: "hidden",
+                        flexWrap: "nowrap",
+                        justifyContent: "space-between",
+                        width: "100%",
                     }}
                 >
-                    <button
-                        onClick={actions.incrementCellSize}
+                    <button onClick={() => actions.setPlaying(!playing)}>
+                        <img
+                            src={playing ? "/pause.svg" : "/play.svg"}
+                            alt={playing ? "Pause" : "Play"}
+                        />
+                    </button>
+                    <button onClick={resetGameInstance}>
+                        <img src="/trash.svg" alt="Reset" />
+                    </button>
+                    <button onClick={randomizeGameInstance}>
+                        <img src="/dice.svg" alt="Randomize" />
+                    </button>
+
+                    <div
                         style={{
-                            borderRadius: "0",
-                            boxShadow: "none",
-                            borderRight: "0.5px solid rgba(0, 0, 0, 0.1)",
+                            display: "flex",
+                            flexDirection: "row",
+                            boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.25)",
+                            borderRadius: "5px",
+                            overflow: "hidden",
                         }}
                     >
-                        <img src="/add-circle.svg" alt="Zoom In" />
-                    </button>
-                    <button
-                        onClick={actions.decrementCellSize}
-                        style={{
-                            borderRadius: "0",
-                            boxShadow: "none",
-                            borderLeft: "0.5px solid rgba(0, 0, 0, 0.1)",
-                        }}
-                    >
-                        <img src="/remove-circle.svg" alt="Zoom Out" />
-                    </button>
+                        <button
+                            onClick={actions.incrementCellSize}
+                            style={{
+                                borderRadius: "0",
+                                boxShadow: "none",
+                                borderRight: "0.5px solid rgba(0, 0, 0, 0.1)",
+                            }}
+                        >
+                            <img src="/add-circle.svg" alt="Zoom In" />
+                        </button>
+                        <button
+                            onClick={actions.decrementCellSize}
+                            style={{
+                                borderRadius: "0",
+                                boxShadow: "none",
+                                borderLeft: "0.5px solid rgba(0, 0, 0, 0.1)",
+                            }}
+                        >
+                            <img src="/remove-circle.svg" alt="Zoom Out" />
+                        </button>
+                    </div>
                 </div>
-            </div>
 
-            <div style={{ width: "100%" }}>
-                <label>Speed : {targetFps} gen/s</label>
-                <input
-                    id="speed"
-                    type="range"
-                    min="1"
-                    max="60"
-                    value={targetFps}
-                    onChange={(e) => actions.setTargetFps(Number(e.target.value))}
-                    style={{ display: "block", marginTop: "5px", width: "100%" }}
-                />
-            </div>
-
-            <div style={{ width: "100%" }}>
-                <label>Fade levels : {fadeLevels}</label>
-                <input
-                    type="range"
-                    min="1"
-                    max="30"
-                    value={fadeLevels}
-                    onChange={(e) => actions.setFadeLevels(Number(e.target.value))}
-                    style={{ display: "block", marginTop: "5px", width: "100%" }}
-                />
-            </div>
-
-            <BackgroundSelector />
-
-            <label className="switch">
-                <div>
+                <div style={{ width: "100%" }}>
+                    <label>Speed : {targetFps} gen/s</label>
                     <input
-                        type="checkbox"
-                        checked={showGrid}
-                        onChange={(e) => actions.setShowGrid(e.currentTarget.checked)}
+                        id="speed"
+                        type="range"
+                        min="1"
+                        max="60"
+                        value={targetFps}
+                        onChange={(e) => actions.setTargetFps(Number(e.target.value))}
+                        style={{ display: "block", marginTop: "5px", width: "100%" }}
                     />
-                    <span className="slider"></span>
                 </div>
-                <span className="switch-label">Show grid</span>
-            </label>
 
-            <label htmlFor="mode">
-                <span>Mode :</span>
-                <select
-                    value={mode}
-                    onChange={(e) => actions.setMode(e.target.value as "Moore" | "Neumann")}
+                <div style={{ width: "100%" }}>
+                    <label>Fade levels : {fadeLevels}</label>
+                    <input
+                        type="range"
+                        min="1"
+                        max="30"
+                        value={fadeLevels}
+                        onChange={(e) => actions.setFadeLevels(Number(e.target.value))}
+                        style={{ display: "block", marginTop: "5px", width: "100%" }}
+                    />
+                </div>
+
+                <BackgroundSelector />
+
+                <label className="switch">
+                    <div>
+                        <input
+                            type="checkbox"
+                            checked={showGrid}
+                            onChange={(e) => actions.setShowGrid(e.currentTarget.checked)}
+                        />
+                        <span className="slider"></span>
+                    </div>
+                    <span className="switch-label">Show grid</span>
+                </label>
+
+                <label htmlFor="mode">
+                    <span>Mode :</span>
+                    <select
+                        value={mode}
+                        onChange={(e) => actions.setMode(e.target.value as "Moore" | "Neumann")}
+                    >
+                        <option value="Moore">Moore</option>
+                        <option value="Neumann">Neumann</option>
+                    </select>
+                </label>
+
+                <hr />
+
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "5px",
+                    }}
                 >
-                    <option value="Moore">Moore</option>
-                    <option value="Neumann">Neumann</option>
-                </select>
-            </label>
-
-            <hr />
-
-            <span>Current generation: {currentGeneration}</span>
-            <span>Number of living cells: {numberOfLivingCells}</span>
+                    <span>Current generation: {currentGeneration}</span>
+                    <span>Number of living cells: {numberOfLivingCells}</span>
+                </div>
+            </div>
         </div>
     );
 }

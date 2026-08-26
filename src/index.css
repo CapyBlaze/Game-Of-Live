@@ -85,7 +85,7 @@ label.switch {
     position: fixed;
     top: 10px;
     left: 10px;
-    width: 200px;
+    width: 225px;
     z-index: 10;
     background-color: #ffffffd9;
     padding: 10px 15px;
@@ -96,9 +96,21 @@ label.switch {
     align-items: flex-start;
     flex-wrap: nowrap;
     gap: 15px;
+    max-height: 100vh;
 
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
+    overflow: hidden;
+
+    transition: max-height 0.3s ease-in-out;
+
+    &.isclosed {
+        animation: hidden-dashboard 0.3s ease-in-out forwards;
+    }
+
+    &.isopen {
+        animation: show-dashboard 0.3s ease-in-out forwards;
+    }
 
     input,
     select {
@@ -118,7 +130,7 @@ label.switch {
         width: 32px;
         height: 32px;
         background: white;
-        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
         border-radius: 5px;
         cursor: pointer;
 
@@ -133,5 +145,25 @@ label.switch {
         border: none;
         border-top: 1px solid #ccc;
         margin: 0;
+    }
+}
+
+@keyframes hidden-dashboard {
+    from {
+        max-height: 100vh;
+    }
+
+    to {
+        max-height: 27.5px;
+    }
+}
+
+@keyframes show-dashboard {
+    from {
+        max-height: 27.5px;
+    }
+
+    to {
+        max-height: 100vh;
     }
 }
