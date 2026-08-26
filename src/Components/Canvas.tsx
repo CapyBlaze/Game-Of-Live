@@ -110,8 +110,11 @@ export default function Canvas() {
             const currentCellSize = cellSizeRef.current;
             const currentGridColor = gridColorRef.current;
 
-            if (playingRef.current && delta >= interval) {
-                engine.computeNextGeneration();
+            if (delta >= interval) {
+                if (playingRef.current) {
+                    engine.computeNextGeneration();
+                }
+
                 lastTime = currentTime - (delta % interval);
 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -157,10 +160,8 @@ export default function Canvas() {
 
     return (
         <>
-            <canvas
-                ref={canvasRef}
+            <div
                 style={{
-                    display: "block",
                     position: "fixed",
                     top: 0,
                     left: 0,
@@ -170,7 +171,16 @@ export default function Canvas() {
                     backgroundSize: "contain",
                     backgroundPosition: "center",
                 }}
-            />
+            >
+                <canvas
+                    ref={canvasRef}
+                    style={{
+                        display: "block",
+                        width: "100%",
+                        height: "100%",
+                    }}
+                />
+            </div>
         </>
     );
 }

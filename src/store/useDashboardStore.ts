@@ -49,8 +49,8 @@ export const useDashboardStore = create<DashboardState>()((set) => ({
 
     showGrid: false,
     mode: "Moore",
-    background: "linear-gradient(40deg, #8a2387, #e94057, #f27121)",
-    gridColor: "236, 225, 248",
+    background: "linear-gradient(135deg, #ff0099, #493240)",
+    gridColor: "28, 27, 26",
 
     actions: {
         setPlaying: (enabled: boolean) => set({ playing: enabled }),
