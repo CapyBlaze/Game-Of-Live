@@ -138,7 +138,9 @@ export default function Dashboard() {
 
                 <hr />
 
-                <div style={{ width: "100%" }}>
+                <div
+                    style={{ width: "100%", display: "flex", gap: "3px", flexDirection: "column" }}
+                >
                     <label htmlFor="speed">
                         <span style={{ fontWeight: "bold" }}>Speed</span> : {targetFps} gen/s
                     </label>
@@ -160,7 +162,9 @@ export default function Dashboard() {
                     />
                 </div>
 
-                <div style={{ width: "100%" }}>
+                <div
+                    style={{ width: "100%", display: "flex", gap: "3px", flexDirection: "column" }}
+                >
                     <label htmlFor="fade-levels">
                         <span style={{ fontWeight: "bold" }}>Fade levels</span> : {fadeLevels}
                     </label>

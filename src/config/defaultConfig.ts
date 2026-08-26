@@ -7,6 +7,9 @@ const CONFIG = {
     zoomMax: 10,
 
     fillGrid: 0.7,
+    gridLineWidth: 0.5,
+    gridLineColor: "rgba(255, 255, 255, 0.15)",
+
     backgrounds: [
         "linear-gradient(135deg, #ff0099, #493240)",
         "linear-gradient(40deg, #8a2387, #e94057, #f27121)",

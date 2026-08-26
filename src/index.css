@@ -58,6 +58,7 @@ input[type="range"] {
     height: 7px;
     border-radius: 10px;
     outline: none;
+    margin: 0;
     background: linear-gradient(
         to right,
         #504b61 var(--progress, 25%),
@@ -135,14 +136,14 @@ label.switch {
             opacity: 0;
             width: 0;
             height: 0;
-        }
 
-        input:checked + .slider {
-            background-color: #4cafd9;
-        }
+            &:checked + .slider {
+                background-color: #4cafd9;
+            }
 
-        input:checked + .slider::before {
-            transform: translateX(18px);
+            &:checked + .slider::before {
+                transform: translateX(18px);
+            }
         }
 
         .slider {
@@ -210,6 +211,10 @@ label.switch {
         display: inline-block;
         width: 140px;
         cursor: pointer;
+
+        border: none;
+        border-radius: 3px;
+        background: #ffffff;
     }
 
     h2 {

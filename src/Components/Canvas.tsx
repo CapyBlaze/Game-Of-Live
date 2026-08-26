@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { GameOfLife } from "../Core/gameOfLife";
 import { useDashboardStore } from "../store/useDashboardStore";
+import CONFIG from "../config/defaultConfig";
 
 export default function Canvas() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -12,6 +13,7 @@ export default function Canvas() {
     const background = useDashboardStore((state) => state.background);
     const gridColor = useDashboardStore((state) => state.gridColor);
     const cellSize = useDashboardStore((state) => state.cellSize);
+    const showGrid = useDashboardStore((state) => state.showGrid);
 
     const fpsRef = useRef<number>(targetFps);
     const fadeLevelsRef = useRef<number>(fadeLevels);
@@ -19,6 +21,7 @@ export default function Canvas() {
     const backgroundRef = useRef<string>(background);
     const gridColorRef = useRef<string>(gridColor);
     const cellSizeRef = useRef<number>(cellSize);
+    const showGridRef = useRef<boolean>(showGrid);
 
     useEffect(() => {
         fpsRef.current = targetFps;
@@ -43,6 +46,10 @@ export default function Canvas() {
     useEffect(() => {
         cellSizeRef.current = cellSize;
     }, [cellSize]);
+
+    useEffect(() => {
+        showGridRef.current = showGrid;
+    }, [showGrid]);
 
     useEffect(() => {
         if (engineRef.current) {
@@ -151,15 +158,31 @@ export default function Canvas() {
                 const alpha = level / currentFadeLevels;
                 ctx.fillStyle = `rgba(${currentGridColor}, ${alpha})`;
                 ctx.beginPath();
+
                 for (let i = 0; i < coords.length; i += 2) {
-                    ctx.rect(
-                        coords[i] * currentCellSize,
-                        coords[i + 1] * currentCellSize,
-                        currentCellSize,
-                        currentCellSize,
-                    );
+                    const x = coords[i] * currentCellSize;
+                    const y = coords[i + 1] * currentCellSize;
+
+                    ctx.rect(x, y, currentCellSize, currentCellSize);
                 }
                 ctx.fill();
+            }
+
+            if (showGridRef.current) {
+                ctx.strokeStyle = CONFIG.gridLineColor;
+                ctx.lineWidth = CONFIG.gridLineWidth * 2;
+                ctx.beginPath();
+
+                for (let x = 0; x <= canvas.width; x += currentCellSize) {
+                    ctx.moveTo(x + CONFIG.gridLineWidth, 0);
+                    ctx.lineTo(x + CONFIG.gridLineWidth, canvas.height);
+                }
+                for (let y = 0; y <= canvas.height; y += currentCellSize) {
+                    ctx.moveTo(0, y + CONFIG.gridLineWidth);
+                    ctx.lineTo(canvas.width, y + CONFIG.gridLineWidth);
+                }
+
+                ctx.stroke();
             }
 
             animationFrameId = requestAnimationFrame(render);
@@ -179,8 +202,6 @@ export default function Canvas() {
                     width: "100vw",
                     height: "100vh",
                     background: background,
-                    backgroundSize: "contain",
-                    backgroundPosition: "center",
                 }}
             >
                 <canvas
