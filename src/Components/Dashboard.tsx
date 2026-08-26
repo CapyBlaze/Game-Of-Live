@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { useDashboardStore } from "../store/useDashboardStore";
 import BackgroundSelector from "./BackgroundSelector";
-
-const SPEED_MIN = 1;
-const SPEED_MAX = 60;
-
-const FADE_LEVELS_MIN = 1;
-const FADE_LEVELS_MAX = 30;
+import CONFIG from "../config/defaultConfig";
 
 export default function Dashboard() {
     const playing = useDashboardStore((state) => state.playing);
@@ -24,9 +19,10 @@ export default function Dashboard() {
 
     const [isDashboardVisible, setIsDashboardVisible] = useState(true);
 
-    const speedPercentage = ((targetFps - SPEED_MIN) / (SPEED_MAX - SPEED_MIN)) * 100;
+    const speedPercentage =
+        ((targetFps - CONFIG.speedMin) / (CONFIG.speedMax - CONFIG.speedMin)) * 100;
     const fadePercentage =
-        ((fadeLevels - FADE_LEVELS_MIN) / (FADE_LEVELS_MAX - FADE_LEVELS_MIN)) * 100;
+        ((fadeLevels - CONFIG.fadeLevelsMin) / (CONFIG.fadeLevelsMax - CONFIG.fadeLevelsMin)) * 100;
 
     return (
         <div className={`dashboard-container ${isDashboardVisible ? "isopen" : "isclosed"}`}>
@@ -128,6 +124,8 @@ export default function Dashboard() {
                     </div>
                 </div>
 
+                <hr />
+
                 <div style={{ width: "100%" }}>
                     <label htmlFor="speed">
                         <span style={{ fontWeight: "bold" }}>Speed</span> : {targetFps} gen/s
@@ -135,8 +133,8 @@ export default function Dashboard() {
                     <input
                         id="speed"
                         type="range"
-                        min={SPEED_MIN}
-                        max={SPEED_MAX}
+                        min={CONFIG.speedMin}
+                        max={CONFIG.speedMax}
                         value={targetFps}
                         onChange={(e) => actions.setTargetFps(Number(e.target.value))}
                         style={
@@ -157,8 +155,8 @@ export default function Dashboard() {
                     <input
                         id="fade-levels"
                         type="range"
-                        min={FADE_LEVELS_MIN}
-                        max={FADE_LEVELS_MAX}
+                        min={CONFIG.fadeLevelsMin}
+                        max={CONFIG.fadeLevelsMax}
                         value={fadeLevels}
                         onChange={(e) => actions.setFadeLevels(Number(e.target.value))}
                         style={
@@ -172,8 +170,6 @@ export default function Dashboard() {
                     />
                 </div>
 
-                <BackgroundSelector />
-
                 <label
                     htmlFor="mode"
                     style={{
@@ -181,7 +177,9 @@ export default function Dashboard() {
                         justifyContent: "space-between",
                     }}
                 >
-                    <span>Mode :</span>
+                    <span>
+                        <span style={{ fontWeight: "bold" }}>Mode</span> :
+                    </span>
                     <select
                         name="mode"
                         id="mode"
@@ -192,6 +190,10 @@ export default function Dashboard() {
                         <option value="Neumann">Neumann</option>
                     </select>
                 </label>
+
+                <hr />
+
+                <BackgroundSelector />
 
                 <hr />
 

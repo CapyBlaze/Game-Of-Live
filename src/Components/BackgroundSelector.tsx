@@ -1,3 +1,4 @@
+import CONFIG from "../config/defaultConfig";
 import { useDashboardStore } from "../store/useDashboardStore";
 
 function InputRadio({
@@ -63,17 +64,6 @@ export default function BackgroundSelector() {
 
     const actions = useDashboardStore((state) => state.actions);
 
-    const BACKGROUNDS = [
-        "linear-gradient(135deg, #ff0099, #493240)",
-        "linear-gradient(40deg, #8a2387, #e94057, #f27121)",
-        "linear-gradient(135deg, #ec2f4b, #009fff)",
-        "linear-gradient(135deg, #654ea3, #eaafc8)",
-        "linear-gradient(135deg, #4159d0, #c84fc0, #ffcd70)",
-    ];
-
-    const DEFAULT_CELL_COLOR = "#0db7d9";
-    const DEFAULT_GRID_COLOR = "#1c1b1a";
-
     return (
         <div
             style={{
@@ -89,7 +79,7 @@ export default function BackgroundSelector() {
                     gap: "5px",
                 }}
             >
-                <span>Cell color</span>
+                <span style={{ fontWeight: "bold" }}>Cell color</span>
                 <div
                     style={{
                         display: "flex",
@@ -99,7 +89,7 @@ export default function BackgroundSelector() {
                         height: "30px",
                     }}
                 >
-                    {BACKGROUNDS.map((bg) => (
+                    {CONFIG.backgrounds.map((bg) => (
                         <InputRadio
                             key={bg}
                             gradient={bg}
@@ -119,7 +109,7 @@ export default function BackgroundSelector() {
                         <input
                             type="color"
                             name="custom-cell"
-                            defaultValue={DEFAULT_CELL_COLOR}
+                            defaultValue={CONFIG.defaultCellSingleColor}
                             onChange={(e) => actions.setBackground(e.target.value)}
                         />
 
@@ -151,7 +141,7 @@ export default function BackgroundSelector() {
                         gap: "5px",
                     }}
                 >
-                    <span>Grid color</span>
+                    <span style={{ fontWeight: "bold" }}>Grid color</span>
                     <div>
                         <label
                             style={{
@@ -164,7 +154,7 @@ export default function BackgroundSelector() {
                             <input
                                 type="color"
                                 name="custom-grid"
-                                defaultValue={DEFAULT_GRID_COLOR}
+                                defaultValue={`rgb(${CONFIG.defaultGridColor})`}
                                 onChange={(e) => {
                                     const hex = e.target.value;
 
@@ -191,7 +181,9 @@ export default function BackgroundSelector() {
                 </div>
                 <div>
                     <label className="switch">
-                        <span className="switch-label">Show grid</span>
+                        <span className="switch-label" style={{ fontWeight: "bold" }}>
+                            Show grid
+                        </span>
                         <div>
                             <input
                                 type="checkbox"

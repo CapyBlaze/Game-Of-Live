@@ -73,6 +73,11 @@ export default function Canvas() {
 
     useEffect(() => {
         const handleAction = (e: MouseEvent) => {
+            const target = e.target as HTMLElement;
+            if (target && target.closest(".dashboard-container")) {
+                return;
+            }
+
             if (e.buttons === 1) {
                 engineRef.current?.click(e.clientX, e.clientY);
             }
@@ -95,7 +100,7 @@ export default function Canvas() {
         if (!ctx) return;
 
         let animationFrameId: number;
-        let lastTime = performance.now();
+        let lastLogicTime = performance.now();
 
         const render = (currentTime: number) => {
             const engine = engineRef.current;
@@ -104,51 +109,51 @@ export default function Canvas() {
                 return;
             }
 
-            const delta = currentTime - lastTime;
-            const interval = 1000 / fpsRef.current;
+            const deltaLogic = currentTime - lastLogicTime;
+            const intervalLogic = 1000 / fpsRef.current;
+
+            if (deltaLogic >= intervalLogic) {
+                if (playingRef.current) {
+                    engine.computeNextGeneration();
+                }
+                lastLogicTime = currentTime - (deltaLogic % intervalLogic);
+            }
+
             const currentFadeLevels = fadeLevelsRef.current;
             const currentCellSize = cellSizeRef.current;
             const currentGridColor = gridColorRef.current;
 
-            if (delta >= interval) {
-                if (playingRef.current) {
-                    engine.computeNextGeneration();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const buckets: number[][] = Array.from({ length: currentFadeLevels + 1 }, () => []);
+
+            for (let x = 0; x < engine.cols; x++) {
+                for (let y = 0; y < engine.rows; y++) {
+                    const idx = x * engine.rows + y;
+                    const overlayAlpha = 1 - engine.energy[idx];
+                    if (overlayAlpha <= 0) continue;
+
+                    const level = Math.round(overlayAlpha * currentFadeLevels);
+                    buckets[level].push(x, y);
                 }
+            }
 
-                lastTime = currentTime - (delta % interval);
+            for (let level = 1; level <= currentFadeLevels; level++) {
+                const coords = buckets[level];
+                if (coords.length === 0) continue;
 
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                const buckets: number[][] = Array.from({ length: currentFadeLevels + 1 }, () => []);
-
-                for (let x = 0; x < engine.cols; x++) {
-                    for (let y = 0; y < engine.rows; y++) {
-                        const idx = x * engine.rows + y;
-                        const overlayAlpha = 1 - engine.energy[idx];
-                        if (overlayAlpha <= 0) continue;
-
-                        const level = Math.round(overlayAlpha * currentFadeLevels);
-                        buckets[level].push(x, y);
-                    }
+                const alpha = level / currentFadeLevels;
+                ctx.fillStyle = `rgba(${currentGridColor}, ${alpha})`;
+                ctx.beginPath();
+                for (let i = 0; i < coords.length; i += 2) {
+                    ctx.rect(
+                        coords[i] * currentCellSize,
+                        coords[i + 1] * currentCellSize,
+                        currentCellSize,
+                        currentCellSize,
+                    );
                 }
-
-                for (let level = 1; level <= currentFadeLevels; level++) {
-                    const coords = buckets[level];
-                    if (coords.length === 0) continue;
-
-                    const alpha = level / currentFadeLevels;
-                    ctx.fillStyle = `rgba(${currentGridColor}, ${alpha})`;
-                    ctx.beginPath();
-                    for (let i = 0; i < coords.length; i += 2) {
-                        ctx.rect(
-                            coords[i] * currentCellSize,
-                            coords[i + 1] * currentCellSize,
-                            currentCellSize,
-                            currentCellSize,
-                        );
-                    }
-                    ctx.fill();
-                }
+                ctx.fill();
             }
 
             animationFrameId = requestAnimationFrame(render);

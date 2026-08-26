@@ -1,4 +1,7 @@
 import { create } from "zustand";
+import CONFIG from "../config/defaultConfig";
+
+type GameMode = "Moore" | "Neumann";
 
 interface DashboardState {
     playing: boolean;
@@ -10,7 +13,7 @@ interface DashboardState {
     numberOfLivingCells: number;
 
     showGrid: boolean;
-    mode: "Moore" | "Neumann";
+    mode: GameMode;
     background: string;
     gridColor: string;
 
@@ -26,7 +29,7 @@ interface DashboardState {
         setNumberOfLivingCells: (count: number) => void;
 
         setShowGrid: (enabled: boolean) => void;
-        setMode: (mode: "Moore" | "Neumann") => void;
+        setMode: (mode: GameMode) => void;
         setBackground: (background: string) => void;
         setGridColor: (color: string) => void;
     };
@@ -39,24 +42,26 @@ interface DashboardState {
 }
 
 export const useDashboardStore = create<DashboardState>()((set) => ({
-    playing: true,
-    cellSize: 5,
+    playing: CONFIG.defaultPlaying,
+    cellSize: CONFIG.defaultCellSize,
 
-    targetFps: 15,
-    fadeLevels: 16,
-    currentGeneration: 0,
-    numberOfLivingCells: 0,
+    targetFps: CONFIG.defaultTargetFps,
+    fadeLevels: CONFIG.defaultFadeLevels,
+    currentGeneration: CONFIG.defaultCurrentGeneration,
+    numberOfLivingCells: CONFIG.defaultNumberOfLivingCells,
 
-    showGrid: false,
-    mode: "Moore",
-    background: "linear-gradient(135deg, #ff0099, #493240)",
-    gridColor: "28, 27, 26",
+    showGrid: CONFIG.defaultShowGrid,
+    mode: CONFIG.defaultMode as GameMode,
+    background: CONFIG.defaultCellGradient,
+    gridColor: CONFIG.defaultGridColor,
 
     actions: {
         setPlaying: (enabled: boolean) => set({ playing: enabled }),
         setCellSize: (cellSize: number) => set({ cellSize: cellSize }),
-        incrementCellSize: () => set((state) => ({ cellSize: Math.min(10, state.cellSize + 1) })),
-        decrementCellSize: () => set((state) => ({ cellSize: Math.max(3, state.cellSize - 1) })),
+        incrementCellSize: () =>
+            set((state) => ({ cellSize: Math.min(CONFIG.zoomMax, state.cellSize + 1) })),
+        decrementCellSize: () =>
+            set((state) => ({ cellSize: Math.max(CONFIG.zoomMin, state.cellSize - 1) })),
 
         setTargetFps: (fps: number) => set({ targetFps: fps }),
         setFadeLevels: (levels: number) => set({ fadeLevels: levels }),
@@ -64,7 +69,7 @@ export const useDashboardStore = create<DashboardState>()((set) => ({
         setNumberOfLivingCells: (count: number) => set({ numberOfLivingCells: count }),
 
         setShowGrid: (enabled: boolean) => set({ showGrid: enabled }),
-        setMode: (mode: "Moore" | "Neumann") => set({ mode: mode }),
+        setMode: (mode: GameMode) => set({ mode: mode }),
         setBackground: (background: string) => set({ background: background }),
         setGridColor: (color: string) => set({ gridColor: color }),
     },

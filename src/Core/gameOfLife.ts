@@ -1,6 +1,5 @@
+import CONFIG from "../config/defaultConfig";
 import { useDashboardStore } from "../store/useDashboardStore";
-
-const FILL_GRID = 0.7;
 
 export class GameOfLife {
     width: number;
@@ -38,7 +37,7 @@ export class GameOfLife {
 
     randomize() {
         for (let i = 0; i < this.grid.length; i++) {
-            this.grid[i] = Math.random() > FILL_GRID ? 1 : 0;
+            this.grid[i] = Math.random() > CONFIG.fillGrid ? 1 : 0;
             this.energy[i] = this.grid[i];
         }
     }
