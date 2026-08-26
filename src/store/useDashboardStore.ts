@@ -22,6 +22,7 @@ interface DashboardState {
         setCellSize: (cellSize: number) => void;
         incrementCellSize: () => void;
         decrementCellSize: () => void;
+        resetCellSize: () => void;
 
         setTargetFps: (fps: number) => void;
         setFadeLevels: (levels: number) => void;
@@ -62,6 +63,7 @@ export const useDashboardStore = create<DashboardState>()((set) => ({
             set((state) => ({ cellSize: Math.min(CONFIG.zoomMax, state.cellSize + 1) })),
         decrementCellSize: () =>
             set((state) => ({ cellSize: Math.max(CONFIG.zoomMin, state.cellSize - 1) })),
+        resetCellSize: () => set({ cellSize: CONFIG.defaultCellSize }),
 
         setTargetFps: (fps: number) => set({ targetFps: fps }),
         setFadeLevels: (levels: number) => set({ fadeLevels: levels }),

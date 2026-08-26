@@ -130,4 +130,42 @@ export class GameOfLife {
         useDashboardStore.getState().actions.setCurrentGeneration(this.generationCount);
         useDashboardStore.getState().actions.setNumberOfLivingCells(this.numberOfLivingCells);
     }
+
+    updateCellSize(newCellSize: number) {
+        if (newCellSize === this.cellSize) return;
+
+        const newCols = Math.ceil(this.width / newCellSize);
+        const newRows = Math.ceil(this.height / newCellSize);
+        const total = newCols * newRows;
+
+        const newGrid = new Uint8Array(total);
+        const newEnergy = new Float32Array(total);
+
+        const offsetX = Math.floor((newCols - this.cols) / 2);
+        const offsetY = Math.floor((newRows - this.rows) / 2);
+
+        for (let x = 0; x < this.cols; x++) {
+            for (let y = 0; y < this.rows; y++) {
+                const oldIdx = x * this.rows + y;
+
+                if (this.grid[oldIdx] === 0 && this.energy[oldIdx] === 0) continue;
+
+                const newX = x + offsetX;
+                const newY = y + offsetY;
+
+                if (newX >= 0 && newX < newCols && newY >= 0 && newY < newRows) {
+                    const newIdx = newX * newRows + newY;
+                    newGrid[newIdx] = this.grid[oldIdx];
+                    newEnergy[newIdx] = this.energy[oldIdx];
+                }
+            }
+        }
+
+        this.cols = newCols;
+        this.rows = newRows;
+        this.cellSize = newCellSize;
+        this.grid = newGrid;
+        this.nextGrid = new Uint8Array(total);
+        this.energy = newEnergy;
+    }
 }

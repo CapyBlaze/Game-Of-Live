@@ -201,8 +201,14 @@ label.switch {
         animation: show-dashboard 0.3s ease-in-out forwards;
     }
 
-    input,
+    input {
+        cursor: pointer;
+    }
+
     select {
+        position: relative;
+        display: inline-block;
+        width: 140px;
         cursor: pointer;
     }
 

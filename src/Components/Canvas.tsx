@@ -45,6 +45,12 @@ export default function Canvas() {
     }, [cellSize]);
 
     useEffect(() => {
+        if (engineRef.current) {
+            engineRef.current.updateCellSize(cellSize);
+        }
+    }, [cellSize]);
+
+    useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
@@ -120,8 +126,8 @@ export default function Canvas() {
             }
 
             const currentFadeLevels = fadeLevelsRef.current;
-            const currentCellSize = cellSizeRef.current;
             const currentGridColor = gridColorRef.current;
+            const currentCellSize = engine.cellSize;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 

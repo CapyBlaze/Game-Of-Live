@@ -13,6 +13,7 @@ export default function Dashboard() {
     const fadeLevels = useDashboardStore((state) => state.fadeLevels);
     const currentGeneration = useDashboardStore((state) => state.currentGeneration);
     const numberOfLivingCells = useDashboardStore((state) => state.numberOfLivingCells);
+    const cellSize = useDashboardStore((state) => state.cellSize);
 
     const mode = useDashboardStore((state) => state.mode);
     const actions = useDashboardStore((state) => state.actions);
@@ -110,6 +111,17 @@ export default function Dashboard() {
                             }}
                         >
                             <img src="/add-circle.svg" alt="Zoom In" />
+                        </button>
+                        <button
+                            onClick={actions.resetCellSize}
+                            style={{
+                                borderRadius: "0",
+                                boxShadow: "none",
+                                background:
+                                    cellSize == CONFIG.defaultCellSize ? "#dddddd" : "#ffffff",
+                            }}
+                        >
+                            <img src="/1-1-circle.svg" alt="Original Size" />
                         </button>
                         <button
                             onClick={actions.decrementCellSize}
