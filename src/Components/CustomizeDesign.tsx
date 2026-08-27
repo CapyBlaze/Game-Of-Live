@@ -61,7 +61,7 @@ function InputRadio({
     );
 }
 
-export default function BackgroundSelector() {
+export default function CustomizeDesign() {
     const currentBg = useDashboardStore((state) => state.background);
     const showGrid = useDashboardStore((state) => state.showGrid);
 
