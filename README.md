@@ -49,4 +49,4 @@ If you want to run it locally on your machine just follow these steps
 
 ## Demo Video
 
-[Link to YouTube video demo](https://youtu.be/9trPpukfjbk)
+[Link to YouTube video demo](https://youtu.be/9fG16yrlBOg)
