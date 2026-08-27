@@ -52,7 +52,7 @@ export default function Dashboard() {
                     onClick={() => setIsDashboardVisible(!isDashboardVisible)}
                 >
                     <img
-                        src="/chevron-forward.svg"
+                        src="./chevron-forward.svg"
                         alt="Close"
                         style={{
                             width: "20px",
@@ -82,15 +82,15 @@ export default function Dashboard() {
                 >
                     <button onClick={() => actions.setPlaying(!playing)}>
                         <img
-                            src={playing ? "/pause.svg" : "/play.svg"}
+                            src={playing ? "./pause.svg" : "./play.svg"}
                             alt={playing ? "Pause" : "Play"}
                         />
                     </button>
                     <button onClick={resetGameInstance}>
-                        <img src="/trash.svg" alt="Reset" />
+                        <img src="./trash.svg" alt="Reset" />
                     </button>
                     <button onClick={randomizeGameInstance}>
-                        <img src="/dice.svg" alt="Randomize" />
+                        <img src="./dice.svg" alt="Randomize" />
                     </button>
 
                     <div
@@ -110,7 +110,7 @@ export default function Dashboard() {
                                 borderRight: "0.5px solid rgba(0, 0, 0, 0.1)",
                             }}
                         >
-                            <img src="/add-circle.svg" alt="Zoom In" />
+                            <img src="./add-circle.svg" alt="Zoom In" />
                         </button>
                         <button
                             onClick={actions.resetCellSize}
@@ -121,7 +121,7 @@ export default function Dashboard() {
                                     cellSize == CONFIG.defaultCellSize ? "#dddddd" : "#ffffff",
                             }}
                         >
-                            <img src="/1-1-circle.svg" alt="Original Size" />
+                            <img src="./1-1-circle.svg" alt="Original Size" />
                         </button>
                         <button
                             onClick={actions.decrementCellSize}
@@ -131,7 +131,7 @@ export default function Dashboard() {
                                 borderLeft: "0.5px solid rgba(0, 0, 0, 0.1)",
                             }}
                         >
-                            <img src="/remove-circle.svg" alt="Zoom Out" />
+                            <img src="./remove-circle.svg" alt="Zoom Out" />
                         </button>
                     </div>
                 </div>

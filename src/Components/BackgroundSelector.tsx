@@ -48,7 +48,7 @@ function InputRadio({
             />
 
             <img
-                src="/checkmark-circle.svg"
+                src="./checkmark-circle.svg"
                 alt="Checkmark"
                 style={{
                     width: "25px",
@@ -117,7 +117,7 @@ export default function BackgroundSelector() {
                         />
 
                         <img
-                            src="/brush-circle.svg"
+                            src="./brush-circle.svg"
                             alt="Brush"
                             style={{
                                 width: "25px",
@@ -170,7 +170,7 @@ export default function BackgroundSelector() {
                             />
 
                             <img
-                                src="/brush-circle.svg"
+                                src="./brush-circle.svg"
                                 alt="Brush"
                                 style={{
                                     width: "25px",
