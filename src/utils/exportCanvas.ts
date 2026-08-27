@@ -133,6 +133,10 @@ export async function exportCanvasImage(sourceCanvas: HTMLCanvasElement, bgValue
     link.click();
 }
 
+function nextFrameTick(): Promise<void> {
+    return new Promise((resolve) => requestAnimationFrame(() => resolve()));
+}
+
 export async function exportCanvasGif(
     engine: GameOfLife,
     bgValue: string,
@@ -186,16 +190,23 @@ export async function exportCanvasGif(
         if (i < frameCount - 1) {
             simEngine.step();
         }
+
+        await nextFrameTick();
     }
 
-    gif.on("finished", (blob: Blob) => {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `GameOfLife-${Date.now()}.gif`;
-        link.click();
-        URL.revokeObjectURL(url);
-    });
+    return new Promise<void>((resolve) => {
+        gif.on("finished", (blob: Blob) => {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `GameOfLife-${Date.now()}.gif`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(url);
+            resolve();
+        });
 
-    gif.render();
+        gif.render();
+    });
 }

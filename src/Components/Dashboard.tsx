@@ -3,22 +3,37 @@ import { useDashboardStore, type GameMode } from "../store/useDashboardStore";
 import BackgroundSelector from "./BackgroundSelector";
 import CONFIG from "../config/defaultConfig";
 
-function ButtonCheck({ icon, alt, onClick }: { icon: string; alt: string; onClick: () => void }) {
-    const [isDownloaded, setIsDownloaded] = useState(false);
+function ButtonCheck({
+    icon,
+    alt,
+    onClick,
+}: {
+    icon: string;
+    alt: string;
+    onClick: () => void | Promise<void>;
+}) {
+    const [status, setStatus] = useState<"idle" | "loading" | "done">("idle");
 
-    const handleClick = () => {
-        onClick();
-        setIsDownloaded(true);
-        setTimeout(() => setIsDownloaded(false), 2000);
+    const handleClick = async () => {
+        if (status === "loading") return;
+
+        setStatus("loading");
+        try {
+            await onClick();
+        } finally {
+            setStatus("done");
+            setTimeout(() => setStatus("idle"), 2000);
+        }
     };
 
     return (
-        <button onClick={handleClick} className="button-check">
-            <img src={icon} alt={alt} className={`icon-gif ${!isDownloaded ? "active" : ""}`} />
+        <button onClick={handleClick} className="button-check" disabled={status === "loading"}>
+            <img src={icon} alt={alt} className={`icon-gif ${status === "idle" ? "active" : ""}`} />
+            <div className={`icon-spinner ${status === "loading" ? "active" : ""}`} />
             <img
                 src="./checkmark.svg"
                 alt="checkmark"
-                className={`icon-check ${isDownloaded ? "active" : ""}`}
+                className={`icon-check ${status === "done" ? "active" : ""}`}
             />
         </button>
     );
@@ -274,9 +289,9 @@ export default function Dashboard() {
                         <ButtonCheck
                             icon="./logo-github.svg"
                             alt="Github"
-                            onClick={() =>
-                                window.open("https://github.com/CapyBlaze/Game-Of-Live", "_blank")
-                            }
+                            onClick={() => {
+                                window.open("https://github.com/CapyBlaze/Game-Of-Live", "_blank");
+                            }}
                         />
                     </div>
 

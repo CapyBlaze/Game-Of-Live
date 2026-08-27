@@ -41,11 +41,11 @@ interface DashboardState {
     randomizeGameInstance: () => void;
     setRandomizeGameInstance: (fn: () => void) => void;
 
-    exportImage: () => void;
-    setExportImage: (fn: () => void) => void;
+    exportImage: () => void | Promise<void>;
+    setExportImage: (fn: () => void | Promise<void>) => void;
 
-    exportGif: () => void;
-    setExportGif: (fn: () => void) => void;
+    exportGif: () => void | Promise<void>;
+    setExportGif: (fn: () => void | Promise<void>) => void;
 
     resetData: () => void;
     setResetData: (fn: () => void) => void;
@@ -92,10 +92,10 @@ export const useDashboardStore = create<DashboardState>()((set) => ({
     setRandomizeGameInstance: (fn: () => void) => set({ randomizeGameInstance: fn }),
 
     exportImage: () => {},
-    setExportImage: (fn: () => void) => set({ exportImage: fn }),
+    setExportImage: (fn: () => void | Promise<void>) => set({ exportImage: fn }),
 
     exportGif: () => {},
-    setExportGif: (fn: () => void) => set({ exportGif: fn }),
+    setExportGif: (fn: () => void | Promise<void>) => set({ exportGif: fn }),
 
     resetData: () => {},
     setResetData: (fn: () => void) => set({ resetData: fn }),
