@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { GameOfLife } from "../Core/gameOfLife";
 import { useDashboardStore } from "../store/useDashboardStore";
 import CONFIG from "../config/defaultConfig";
+import { exportCanvasImage } from "../utils/exportCanvas";
 
 export default function Canvas() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -79,6 +80,25 @@ export default function Canvas() {
         useDashboardStore.getState().setRandomizeGameInstance(() => {
             engine.randomize();
 
+            const ctx = canvas.getContext("2d");
+            ctx?.clearRect(0, 0, canvas.width, canvas.height);
+        });
+
+        useDashboardStore.getState().setExportImage(async () => {
+            exportCanvasImage(canvas, backgroundRef.current);
+        });
+
+        useDashboardStore.getState().setExportGif(() => {
+            // const gif = engine.exportGif();
+            // const link = document.createElement("a");
+            // link.href = gif;
+            // link.download = "game_of_life.gif";
+            // link.click();
+        });
+
+        useDashboardStore.getState().setResetData(() => {
+            engine.clear();
+            engineRef.current = new GameOfLife(width, height, cellSizeRef.current);
             const ctx = canvas.getContext("2d");
             ctx?.clearRect(0, 0, canvas.width, canvas.height);
         });
@@ -195,6 +215,7 @@ export default function Canvas() {
     return (
         <>
             <div
+                id="canvas-container"
                 style={{
                     position: "fixed",
                     top: 0,

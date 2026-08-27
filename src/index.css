@@ -248,6 +248,27 @@ label.switch {
     }
 }
 
+.button-check {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    .icon-gif,
+    .icon-check {
+        transition: opacity 0.3s ease;
+        opacity: 0;
+        pointer-events: none;
+        position: absolute;
+
+        &.active {
+            opacity: 1;
+            pointer-events: auto;
+            position: relative;
+        }
+    }
+}
+
 @keyframes hidden-dashboard {
     from {
         max-height: 100vh;

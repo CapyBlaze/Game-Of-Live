@@ -3,11 +3,35 @@ import { useDashboardStore, type GameMode } from "../store/useDashboardStore";
 import BackgroundSelector from "./BackgroundSelector";
 import CONFIG from "../config/defaultConfig";
 
+function ButtonCheck({ icon, alt, onClick }: { icon: string; alt: string; onClick: () => void }) {
+    const [isDownloaded, setIsDownloaded] = useState(false);
+
+    const handleClick = () => {
+        onClick();
+        setIsDownloaded(true);
+        setTimeout(() => setIsDownloaded(false), 2000);
+    };
+
+    return (
+        <button onClick={handleClick} className="button-check">
+            <img src={icon} alt={alt} className={`icon-gif ${!isDownloaded ? "active" : ""}`} />
+            <img
+                src="./checkmark.svg"
+                alt="checkmark"
+                className={`icon-check ${isDownloaded ? "active" : ""}`}
+            />
+        </button>
+    );
+}
+
 export default function Dashboard() {
     const playing = useDashboardStore((state) => state.playing);
 
     const resetGameInstance = useDashboardStore((state) => state.resetGameInstance);
     const randomizeGameInstance = useDashboardStore((state) => state.randomizeGameInstance);
+    const exportImage = useDashboardStore((state) => state.exportImage);
+    const exportGif = useDashboardStore((state) => state.exportGif);
+    const resetData = useDashboardStore((state) => state.resetData);
 
     const targetFps = useDashboardStore((state) => state.targetFps);
     const fadeLevels = useDashboardStore((state) => state.fadeLevels);
@@ -211,6 +235,55 @@ export default function Dashboard() {
                 <hr />
 
                 <BackgroundSelector />
+
+                <hr />
+
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        flexWrap: "nowrap",
+                        justifyContent: "space-between",
+                        width: "100%",
+                    }}
+                >
+                    <div
+                        style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            flexWrap: "nowrap",
+                            justifyContent: "flex-start",
+                            gap: "10px",
+                        }}
+                    >
+                        <ButtonCheck
+                            icon="./link.svg"
+                            alt="Copy Link"
+                            onClick={() => navigator.clipboard.writeText(window.location.href)}
+                        />
+                        <ButtonCheck
+                            icon="./image.svg"
+                            alt="Export Image"
+                            onClick={() => exportImage()}
+                        />
+                        <ButtonCheck
+                            icon="./images.svg"
+                            alt="Export Gif"
+                            onClick={() => exportGif()}
+                        />
+                        <ButtonCheck
+                            icon="./logo-github.svg"
+                            alt="Github"
+                            onClick={() =>
+                                window.open("https://github.com/CapyBlaze/Game-Of-Live", "_blank")
+                            }
+                        />
+                    </div>
+
+                    <button onClick={resetData}>
+                        <img src="./reload.svg" alt="Reset Data" />
+                    </button>
+                </div>
 
                 <hr />
 
