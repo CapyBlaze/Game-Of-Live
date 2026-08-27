@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 import { GameOfLife } from "../Core/gameOfLife";
 import { useDashboardStore } from "../store/useDashboardStore";
-import CONFIG from "../config/defaultConfig";
-import { exportCanvasImage } from "../utils/exportCanvas";
+import { exportCanvasGif, exportCanvasImage } from "../utils/exportCanvas";
+import { drawEngineFrame } from "../utils/drawEngine";
 
 export default function Canvas() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -71,33 +71,40 @@ export default function Canvas() {
         engineRef.current = engine;
 
         useDashboardStore.getState().setResetGameInstance(() => {
-            engine.clear();
+            engineRef.current?.clear();
 
             const ctx = canvas.getContext("2d");
             ctx?.clearRect(0, 0, canvas.width, canvas.height);
         });
 
         useDashboardStore.getState().setRandomizeGameInstance(() => {
-            engine.randomize();
+            engineRef.current?.randomize();
 
             const ctx = canvas.getContext("2d");
             ctx?.clearRect(0, 0, canvas.width, canvas.height);
         });
 
         useDashboardStore.getState().setExportImage(async () => {
-            exportCanvasImage(canvas, backgroundRef.current);
+            if (!canvasRef.current) return;
+            await exportCanvasImage(canvasRef.current, backgroundRef.current);
         });
 
-        useDashboardStore.getState().setExportGif(() => {
-            // const gif = engine.exportGif();
-            // const link = document.createElement("a");
-            // link.href = gif;
-            // link.download = "game_of_life.gif";
-            // link.click();
+        useDashboardStore.getState().setExportGif(async () => {
+            if (!engineRef.current) return;
+
+            await exportCanvasGif(
+                engineRef.current,
+                backgroundRef.current,
+                gridColorRef.current,
+                fadeLevelsRef.current,
+                showGridRef.current,
+                40, // 40 images
+                80, // 80ms par frame (environ 12 FPS)
+            );
         });
 
         useDashboardStore.getState().setResetData(() => {
-            engine.clear();
+            engineRef.current?.clear();
             engineRef.current = new GameOfLife(width, height, cellSizeRef.current);
             const ctx = canvas.getContext("2d");
             ctx?.clearRect(0, 0, canvas.width, canvas.height);
@@ -154,56 +161,9 @@ export default function Canvas() {
 
             const currentFadeLevels = fadeLevelsRef.current;
             const currentGridColor = gridColorRef.current;
-            const currentCellSize = engine.cellSize;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            const buckets: number[][] = Array.from({ length: currentFadeLevels + 1 }, () => []);
-
-            for (let x = 0; x < engine.cols; x++) {
-                for (let y = 0; y < engine.rows; y++) {
-                    const idx = x * engine.rows + y;
-                    const overlayAlpha = 1 - engine.energy[idx];
-                    if (overlayAlpha <= 0) continue;
-
-                    const level = Math.round(overlayAlpha * currentFadeLevels);
-                    buckets[level].push(x, y);
-                }
-            }
-
-            for (let level = 1; level <= currentFadeLevels; level++) {
-                const coords = buckets[level];
-                if (coords.length === 0) continue;
-
-                const alpha = level / currentFadeLevels;
-                ctx.fillStyle = `rgba(${currentGridColor}, ${alpha})`;
-                ctx.beginPath();
-
-                for (let i = 0; i < coords.length; i += 2) {
-                    const x = coords[i] * currentCellSize;
-                    const y = coords[i + 1] * currentCellSize;
-
-                    ctx.rect(x, y, currentCellSize, currentCellSize);
-                }
-                ctx.fill();
-            }
-
-            if (showGridRef.current) {
-                ctx.strokeStyle = CONFIG.gridLineColor;
-                ctx.lineWidth = CONFIG.gridLineWidth * 2;
-                ctx.beginPath();
-
-                for (let x = 0; x <= canvas.width; x += currentCellSize) {
-                    ctx.moveTo(x + CONFIG.gridLineWidth, 0);
-                    ctx.lineTo(x + CONFIG.gridLineWidth, canvas.height);
-                }
-                for (let y = 0; y <= canvas.height; y += currentCellSize) {
-                    ctx.moveTo(0, y + CONFIG.gridLineWidth);
-                    ctx.lineTo(canvas.width, y + CONFIG.gridLineWidth);
-                }
-
-                ctx.stroke();
-            }
+            drawEngineFrame(ctx, engine, currentGridColor, currentFadeLevels, showGridRef.current);
 
             animationFrameId = requestAnimationFrame(render);
         };

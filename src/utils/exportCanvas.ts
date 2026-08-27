@@ -1,3 +1,7 @@
+import GIF from "gif.js";
+import { drawEngineFrame } from "./drawEngine";
+import type { GameOfLife } from "../Core/gameOfLife";
+
 function applyBackground(
     ctx: CanvasRenderingContext2D,
     width: number,
@@ -52,7 +56,50 @@ function applyBackground(
     ctx.fillRect(0, 0, width, height);
 }
 
-export function exportCanvasImage(sourceCanvas: HTMLCanvasElement, bgValue: string) {
+function loadImageFromUrl(url: string): Promise<HTMLImageElement> {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+
+        img.onload = () => resolve(img);
+
+        img.src = url;
+    });
+}
+
+function drawWatermark(
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    logoImg: HTMLImageElement | null,
+) {
+    const text = "Game of Life | CapyBlaze";
+    const logoSize = 20;
+    const paddingRight = 15;
+    const paddingBottom = 15;
+    const gap = 8;
+
+    ctx.font = "14px sans-serif";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+    ctx.textBaseline = "middle";
+
+    const textWidth = ctx.measureText(text).width;
+    const totalWidth = logoImg ? logoSize + gap + textWidth : textWidth;
+
+    const startX = width - paddingRight - totalWidth;
+    const centerY = height - paddingBottom - logoSize / 2;
+
+    if (logoImg) {
+        ctx.drawImage(logoImg, startX, centerY - logoSize / 2, logoSize, logoSize);
+        ctx.textAlign = "left";
+        ctx.fillText(text, startX + logoSize + gap, centerY);
+    } else {
+        ctx.textAlign = "left";
+        ctx.fillText(text, startX, centerY);
+    }
+}
+
+export async function exportCanvasImage(sourceCanvas: HTMLCanvasElement, bgValue: string) {
     const width = sourceCanvas.width || sourceCanvas.getBoundingClientRect().width;
     const height = sourceCanvas.height || sourceCanvas.getBoundingClientRect().height;
 
@@ -69,18 +116,86 @@ export function exportCanvasImage(sourceCanvas: HTMLCanvasElement, bgValue: stri
     if (!ctx) return;
 
     applyBackground(ctx, width, height, bgValue);
-
     ctx.globalCompositeOperation = "source-over";
     ctx.drawImage(sourceCanvas, 0, 0, width, height);
 
-    ctx.font = "14px sans-serif";
-    ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
-    ctx.textAlign = "right";
-    ctx.fillText("CapyBlaze | Game of Life", width - 10, height - 10);
+    try {
+        const logoImg = await loadImageFromUrl("./favicon.svg");
+        drawWatermark(ctx, width, height, logoImg);
+    } catch (err) {
+        console.error("Error whilst loading the SVG:", err);
+    }
 
     const image = tempCanvas.toDataURL("image/png");
     const link = document.createElement("a");
     link.href = image;
     link.download = `GameOfLive-${Date.now()}.png`;
     link.click();
+}
+
+export async function exportCanvasGif(
+    engine: GameOfLife,
+    bgValue: string,
+    gridColor: string,
+    fadeLevels: number,
+    showGrid: boolean,
+    frameCount: number = 30,
+    delay: number = 100,
+) {
+    const width = engine.width;
+    const height = engine.height;
+
+    if (width === 0 || height === 0) {
+        console.error("Invalid canvas: dimensions are zero");
+        return;
+    }
+
+    let logoImg: HTMLImageElement | null = null;
+    try {
+        logoImg = await loadImageFromUrl("./favicon.svg");
+    } catch (err) {
+        console.warn("Logo not loaded for the GIF:", err);
+    }
+
+    const gif = new GIF({
+        workers: 2,
+        quality: 10,
+        width: width,
+        height: height,
+        workerScript: "./gif.worker.js",
+    });
+
+    const simEngine = engine.clone();
+
+    const tempCanvas = document.createElement("canvas");
+    tempCanvas.width = width;
+    tempCanvas.height = height;
+    const ctx = tempCanvas.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return;
+
+    for (let i = 0; i < frameCount; i++) {
+        ctx.clearRect(0, 0, width, height);
+        applyBackground(ctx, width, height, bgValue);
+
+        ctx.globalCompositeOperation = "source-over";
+        drawEngineFrame(ctx, simEngine, gridColor, fadeLevels, showGrid);
+
+        drawWatermark(ctx, width, height, logoImg);
+        gif.addFrame(ctx, { copy: true, delay: delay });
+
+        if (i < frameCount - 1) {
+            simEngine.step();
+        }
+    }
+
+    gif.on("finished", (blob: Blob) => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `GameOfLife-${Date.now()}.gif`;
+        link.click();
+        URL.revokeObjectURL(url);
+    });
+
+    gif.render();
 }

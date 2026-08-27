@@ -16,7 +16,13 @@ export class GameOfLife {
     generationCount: number;
     numberOfLivingCells: number;
 
-    constructor(width: number, height: number, cellSize: number, decay = 0.92) {
+    constructor(
+        width: number,
+        height: number,
+        cellSize: number,
+        decay = 0.92,
+        skipRandomize = false,
+    ) {
         this.width = width;
         this.height = height;
         this.cols = Math.ceil(width / cellSize);
@@ -32,7 +38,7 @@ export class GameOfLife {
         this.generationCount = 0;
         this.numberOfLivingCells = 0;
 
-        this.randomize();
+        if (!skipRandomize) this.randomize();
     }
 
     randomize() {
@@ -42,7 +48,7 @@ export class GameOfLife {
         }
     }
 
-    computeNextGeneration() {
+    private stepGrid() {
         const { cols, rows, grid, nextGrid, energy, decay } = this;
         const mode = useDashboardStore.getState().mode;
 
@@ -55,7 +61,6 @@ export class GameOfLife {
                 for (let dx = -1; dx <= 1; dx++) {
                     for (let dy = -1; dy <= 1; dy++) {
                         if (dx === 0 && dy === 0) continue;
-
                         if (mode === "Neumann" && Math.abs(dx) + Math.abs(dy) === 2) continue;
 
                         let nx, ny;
@@ -65,7 +70,6 @@ export class GameOfLife {
                         } else {
                             nx = x + dx;
                             ny = y + dy;
-
                             if (nx < 0 || nx >= cols || ny < 0 || ny >= rows) continue;
                         }
                         neighbors += grid[nx * rows + ny];
@@ -90,10 +94,26 @@ export class GameOfLife {
         }
 
         this.grid.set(nextGrid);
-
         this.generationCount++;
+    }
+
+    computeNextGeneration() {
+        this.stepGrid();
         useDashboardStore.getState().actions.setCurrentGeneration(this.generationCount);
         useDashboardStore.getState().actions.setNumberOfLivingCells(this.numberOfLivingCells);
+    }
+
+    step() {
+        this.stepGrid();
+    }
+
+    clone(): GameOfLife {
+        const copy = new GameOfLife(this.width, this.height, this.cellSize, this.decay, true);
+        copy.grid.set(this.grid);
+        copy.energy.set(this.energy);
+        copy.generationCount = this.generationCount;
+        copy.numberOfLivingCells = this.numberOfLivingCells;
+        return copy;
     }
 
     click(x: number, y: number) {
