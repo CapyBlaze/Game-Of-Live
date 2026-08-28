@@ -12,17 +12,17 @@ It is a web-based Game of Life simulation rendered on an HTML5 canvas. You can d
 
 ## Why did you build it?
 
-I wanted to take Conway's Game of Life, a project every programmer eventually builds and turn it into something more than a black-and-white grid of on/off cells. By adding a fade effect to dying cells, the simulation stops feeling like a technical demo and starts feeling like a generative art piece, closer to what you'd see visualized on an oscilloscope or a piece of electronic art installation
+I wanted to take Conway's Game of Life, a project every programmer eventually builds and turn it into something more than a black-and-white grid of on/off cells. By adding a fade effect to dying cells, the simulation stops feeling like a technical demo and starts feeling like a generative art piece
 
 ## Inspiration
 
-The idea came from thinking about what "life" and "art" have in common. Life itself is a form of art, so a simulation of life can be one too. Instead of cells simply switching off, I made them fade away gradually, leaving a trail of light behind them. That small change turns the simulation into something closer to an electronic art piece than a pure algorithm demo
+The idea came from thinking about what "life" and "art" have in common. Life itself is a form of art so a simulation of life can be one too. Instead of cells simply switching off, I made them fade away gradually leaving a trail of light behind them. That small change turns the simulation into something closer to an electronic art piece than a pure algorithm demo
 
 ## Theme
 
 Theme selected: **Electroart**
 
-This project fits the Electroart theme because it turns a purely algorithmic simulation, Conway's Game of Life, into a visual art piece rendered entirely through code. The fading trails left by dying cells create glowing, organic patterns reminiscent of electronic visualizers and the customizable colors and gradients let anyone turn the simulation into their own generative artwork
+This project fits the Electroart theme because it turns a purely algorithmic simulation, Conway's Game of Life into a visual art piece rendered entirely through code. The fading trails left by dying cells create glowing, organic patterns reminiscent of electronic visualizers and the customizable colors and gradients let anyone turn the simulation into their own generative artwork
 
 ## How do I test it?
 
